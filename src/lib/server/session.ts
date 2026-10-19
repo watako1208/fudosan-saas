@@ -110,3 +110,15 @@ export async function currentStoreId(ctx: Ctx): Promise<string | null> {
   if (!v) return null;
   return canAccessStore(ctx, v) ? v : null;
 }
+
+/** 定期処理用のシステム権限コンテキスト（/api/jobs から CRON_SECRET 確認後にのみ使用） */
+export function systemCtx(companyId: string): Ctx {
+  return {
+    uid: "system",
+    companyId,
+    user: { uid: "system", companyId, displayName: "定期処理", email: "", kind: "staff", roles: ["admin"], extraCaps: [], storeIds: [], partyId: null },
+    caps: capsOf(["admin"]),
+    authTime: Math.floor(Date.now() / 1000),
+    isStaff: true,
+  };
+}

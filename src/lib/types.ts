@@ -416,6 +416,9 @@ export interface DocumentDoc extends BaseDoc {
   status: "draft" | "in_review" | "approved" | "issued" | "superseded";
   currentVersionId: string | null;
   sourceUpdatedAt: string | null; // 差込み元の更新検知
+  publishedTo: ("customer" | "tenant" | "owner" | "vendor")[]; // 外部利用者ページへの公開（発行済みのみ）
+  partyIds: string[]; // 公開先の関係者
+  keywords: string[];
 }
 
 export interface DocumentVersion extends BaseDoc {
