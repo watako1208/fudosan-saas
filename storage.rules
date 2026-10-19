@@ -1,0 +1,9 @@
+rules_version = '2';
+// 添付ファイルは /api/files/{id} で権限確認後に配信する。直接アクセスは禁止。
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "indexes": [
+    { "collectionGroup": "properties", "fields": [["archived", "ASCENDING"], ["updatedAt", "DESCENDING"]] },
+    { "collectionGroup": "properties", "fields": [["archived", "ASCENDING"], ["updatedAt", "ASCENDING"]] },
+    { "collectionGroup": "properties", "fields": [["archived", "ASCENDING"], ["number", "ASCENDING"]] },
+    { "collectionGroup": "properties", "fields": [["archived", "ASCENDING"], ["number", "DESCENDING"]] },
+    { "collectionGroup": "properties", "fields": [["archived", "ASCENDING"], ["name", "ASCENDING"]] },
+    { "collectionGroup": "properties", "fields": [["archived", "ASCENDING"], ["name", "DESCENDING"]] },
+    { "collectionGroup": "properties", "fields": [["kind", "ASCENDING"], ["archived", "ASCENDING"], ["updatedAt", "DESCENDING"]] },
+    { "collectionGroup": "properties", "fields": [["listingStatus", "ASCENDING"], ["archived", "ASCENDING"], ["updatedAt", "DESCENDING"]] },
+    { "collectionGroup": "properties", "fields": [["assigneeUid", "ASCENDING"], ["archived", "ASCENDING"], ["updatedAt", "DESCENDING"]] },
+    { "collectionGroup": "properties", "fields": [["storeId", "ASCENDING"], ["archived", "ASCENDING"], ["updatedAt", "DESCENDING"]] },
+    { "collectionGroup": "notifications", "fields": [["toUid", "ASCENDING"], ["read", "ASCENDING"]] },
+    { "collectionGroup": "notifications", "fields": [["toUid", "ASCENDING"], ["createdAt", "DESCENDING"]] },
+    { "collectionGroup": "users", "fields": [["companyId", "ASCENDING"], ["kind", "ASCENDING"]] },
+    { "collectionGroup": "auditLogs", "fields": [["entity", "ASCENDING"], ["entityId", "ASCENDING"], ["at", "DESCENDING"]] }
+  ]
+}

@@ -1,0 +1,26 @@
+# Firebase App Hosting 設定
+runConfig:
+  minInstances: 0
+  maxInstances: 4
+  concurrency: 40
+  cpu: 1
+  memoryMiB: 1024
+env:
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: REPLACE_ME
+    availability: [BUILD, RUNTIME]
+  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    value: REPLACE_ME
+    availability: [BUILD, RUNTIME]
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: REPLACE_ME
+    availability: [BUILD, RUNTIME]
+  - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    value: REPLACE_ME
+    availability: [BUILD, RUNTIME]
+  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
+    value: REPLACE_ME
+    availability: [BUILD, RUNTIME]
+  - variable: CRON_SECRET
+    secret: cron-secret
+    availability: [RUNTIME]

@@ -1,26 +1,75 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* デザイン: 背景は薄いグレー、入力・一覧は白、主操作は濃い青。
+   赤はエラー・期限超過、黄は確認待ちに限定し、状態名を必ず併記する。 */
+@theme {
+  --color-bg: #f3f4f6;
+  --color-surface: #ffffff;
+  --color-line: #e2e5ea;
+  --color-ink: #1f2937;
+  --color-muted: #5b6472;
+  --color-primary: #1e3a8a;
+  --color-primary-hover: #1e40af;
+  --color-primary-soft: #e8eefc;
+  --color-danger: #b91c1c;
+  --color-danger-soft: #fdecec;
+  --color-warn: #8a6100;
+  --color-warn-soft: #fff6d6;
+  --color-ok: #166534;
+  --color-ok-soft: #e7f6ec;
+  --font-sans: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", "Meiryo", system-ui, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  font-size: 15px;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+}
+
+h1 { font-size: 1.6rem; font-weight: 700; line-height: 1.3; }
+h2 { font-size: 1.25rem; font-weight: 700; line-height: 1.4; }
+h3 { font-size: 1.1rem; font-weight: 700; }
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-md border px-4 font-medium whitespace-nowrap transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+    min-height: 40px;
+    font-size: 0.95rem;
+  }
+  .btn-primary { @apply border-primary bg-primary text-white hover:bg-primary-hover; }
+  .btn-secondary { @apply border-line bg-surface text-ink hover:bg-bg; }
+  .btn-danger { @apply border-danger bg-surface text-danger hover:bg-danger-soft; }
+  .btn-ghost { @apply border-transparent bg-transparent text-primary hover:bg-primary-soft; }
+  .btn-sm { min-height: 32px; @apply px-2.5 text-sm; }
+
+  .input {
+    @apply w-full rounded-md border border-line bg-surface px-3 text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/20;
+    min-height: 40px;
+    font-size: 0.95rem;
+  }
+  .input[aria-invalid="true"] { @apply border-danger ring-1 ring-danger/30; }
+  textarea.input { @apply py-2; }
+
+  .card { @apply rounded-lg border border-line bg-surface; }
+  .card-pad { @apply p-4 sm:p-5; }
+
+  .label { @apply mb-1 block text-sm font-medium text-ink; }
+  .help { @apply mt-1 text-xs text-muted; }
+  .field-error { @apply mt-1 text-sm text-danger; }
+
+  .table { @apply w-full border-collapse text-sm; }
+  .table th { @apply border-b border-line bg-[#f8f9fb] px-3 py-2 text-left font-semibold text-muted whitespace-nowrap; }
+  .table td { @apply border-b border-line px-3 py-2.5 align-top; }
+  .table tr.row-link { @apply cursor-pointer hover:bg-primary-soft/50; }
+
+  .dl { @apply grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2 lg:grid-cols-3; }
+  .dl dt { @apply text-xs text-muted; }
+  .dl dd { @apply break-words; }
+
+  .num { font-variant-numeric: tabular-nums; @apply text-right whitespace-nowrap; }
 }
