@@ -1,8 +1,9 @@
 import "server-only";
 import { cache } from "react";
+import { redirect } from "next/navigation";
 import { col } from "./repo";
-import { Ctx } from "./session";
-import type { Attachment } from "@/lib/types";
+import { Ctx, getCtx } from "./session";
+import type { Attachment, DocBlock } from "@/lib/types";
 
 /**
  * 外部利用者（顧客・入居者・オーナー・工事業者）が閲覧できる対象の集合。
@@ -63,9 +64,9 @@ export const externalScope = cache(async (ctx: Ctx): Promise<ExternalScope | nul
   }
   if (kind === "customer") {
     s.dealIds = new Set(await ids(ctx, "deals", "customerId", "==", partyId));
-    for (const chunk of chunks([...s.dealIds], 30)) {
-      (await ids(ctx, "proposals", "dealId", "in", chunk)).forEach((x) => s.proposalIds.add(x));
-    }
+    // 提案は「本人宛て かつ 公開済み」のみ
+    const ps = await col(ctx.companyId, "proposals").where("customerId", "==", partyId).where("publishedToCustomer", "==", true).select().limit(500).get();
+    ps.docs.forEach((d) => s.proposalIds.add(d.id));
   }
   if (kind === "vendor") {
     s.repairIds = new Set(await ids(ctx, "repairs", "vendorPartyId", "==", partyId));
@@ -73,7 +74,39 @@ export const externalScope = cache(async (ctx: Ctx): Promise<ExternalScope | nul
   for (const chunk of chunks([...s.repairIds], 30)) {
     (await ids(ctx, "estimates", "repairId", "in", chunk)).forEach((x) => s.estimateIds.add(x));
   }
+  // 公開書類: 発行済み かつ 本人が公開先 かつ 利用者種別へ公開
+  const docs = await col(ctx.companyId, "documents").where("partyIds", "array-contains", partyId).where("status", "==", "issued").select("publishedTo").limit(500).get();
+  docs.docs.forEach((d) => {
+    if (((d.data().publishedTo ?? []) as string[]).includes(kind)) s.documentIds.add(d.id);
+  });
   return s;
+});
+
+/**
+ * 外部利用者ページ用: 未ログインはログインへ、社内利用者はホームへ。
+ * 関係者（partyId）が紐づいていない外部利用者は scope=null を返す（画面で案内を表示）。
+ */
+export async function requireExternalPage(): Promise<{ ctx: Ctx; scope: ExternalScope | null }> {
+  const ctx = await getCtx();
+  if (!ctx) redirect("/login?next=/portal");
+  if (ctx.isStaff) redirect("/home");
+  return { ctx, scope: await externalScope(ctx) };
+}
+
+/** 公開書類の現行版に画像として含まれる添付ID（書類内の画像表示用） */
+export const publishedDocumentImageIds = cache(async (ctx: Ctx): Promise<Set<string>> => {
+  const s = await externalScope(ctx);
+  const out = new Set<string>();
+  if (!s || !s.documentIds.size) return out;
+  const docs = await Promise.all([...s.documentIds].slice(0, 100).map((id) => col(ctx.companyId, "documents").doc(id).get()));
+  const verIds = docs.map((d) => d.data()?.currentVersionId as string | undefined).filter((x): x is string => !!x);
+  const vers = await Promise.all(verIds.map((id) => col(ctx.companyId, "documentVersions").doc(id).get()));
+  for (const v of vers) {
+    const data = v.data();
+    if (!data || data.companyId !== ctx.companyId || data.status !== "issued") continue;
+    for (const b of (data.blocks ?? []) as DocBlock[]) if (b.type === "image") out.add(b.attachmentId);
+  }
+  return out;
 });
 
 function chunks<T>(arr: T[], n: number): T[][] {
@@ -89,6 +122,8 @@ export async function externalCanViewAttachment(ctx: Ctx, a: Attachment): Promis
     return a.companyId === ctx.companyId && a.uploadedBy === ctx.uid && !a.quarantined;
   }
   if (a.uploadedBy === ctx.uid) return true;
+  // 発行済み・公開済み書類に画像として含まれるもの（社内のみの添付でも、公開書類の一部として表示する）
+  if ((await publishedDocumentImageIds(ctx)).has(a.id)) return true;
   if (a.visibility !== ctx.user.kind) return false;
   const s = await externalScope(ctx);
   if (!s) return false;

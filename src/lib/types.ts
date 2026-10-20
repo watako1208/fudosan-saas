@@ -470,6 +470,7 @@ export interface Invoice extends BaseDoc {
   tax: number;
   total: number;
   paid: number; // 配分済み合計（入金配分から更新）
+  paidState?: "none" | "partial" | "full"; // paid/total から算出した集約値（配分と同じトランザクションで更新。一覧の絞込み用）
   confirmedAt: string | null;
   confirmedBy: string | null;
   cancelOf: string | null; // 取消・訂正元
@@ -509,6 +510,7 @@ export interface Allocation extends BaseDoc {
   propertyId: string | null;
   contractId: string | null;
   itemBreakdown: { itemCode: string; amount: number }[]; // 費目別の按分
+  paymentDate?: string | null; // 入金日（精算対象の判定に使用）
 }
 
 export interface ImportBatch extends BaseDoc {
@@ -540,6 +542,7 @@ export interface Settlement extends BaseDoc {
   confirmedBy: string | null;
   confirmedAt: string | null;
   correctionOf: string | null;
+  publishedToOwner?: boolean; // オーナーページへの公開（確定後のみ）
 }
 
 export interface Remittance extends BaseDoc {

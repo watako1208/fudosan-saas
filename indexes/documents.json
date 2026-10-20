@@ -1,0 +1,19 @@
+{
+  "indexes": [
+    { "collectionGroup": "documents", "fields": [["archived", "ASCENDING"], ["updatedAt", "DESCENDING"]] },
+    { "collectionGroup": "documents", "fields": [["archived", "ASCENDING"], ["updatedAt", "ASCENDING"]] },
+    { "collectionGroup": "documents", "fields": [["archived", "ASCENDING"], ["number", "ASCENDING"]] },
+    { "collectionGroup": "documents", "fields": [["archived", "ASCENDING"], ["number", "DESCENDING"]] },
+    { "collectionGroup": "documents", "fields": [["archived", "ASCENDING"], ["createdAt", "DESCENDING"]] },
+    { "collectionGroup": "documents", "fields": [["docType", "ASCENDING"], ["archived", "ASCENDING"], ["updatedAt", "DESCENDING"]] },
+    { "collectionGroup": "documents", "fields": [["status", "ASCENDING"], ["archived", "ASCENDING"], ["updatedAt", "DESCENDING"]] },
+    { "collectionGroup": "documents", "fields": [["docType", "ASCENDING"], ["status", "ASCENDING"], ["archived", "ASCENDING"], ["updatedAt", "DESCENDING"]] },
+    { "collectionGroup": "documents", "fields": [["storeId", "ASCENDING"], ["archived", "ASCENDING"], ["updatedAt", "DESCENDING"]] },
+    { "collectionGroup": "documents", "fields": [["docType", "ASCENDING"], ["storeId", "ASCENDING"], ["archived", "ASCENDING"], ["updatedAt", "DESCENDING"]] },
+    { "collectionGroup": "documents", "fields": [["status", "ASCENDING"], ["storeId", "ASCENDING"], ["archived", "ASCENDING"], ["updatedAt", "DESCENDING"]] },
+    { "collectionGroup": "documents", "fields": [["entity", "ASCENDING"], ["entityId", "ASCENDING"], ["archived", "ASCENDING"], ["updatedAt", "DESCENDING"]] },
+    { "collectionGroup": "documents", "fields": [["partyIds", "CONTAINS"], ["status", "ASCENDING"], ["updatedAt", "DESCENDING"]] },
+    { "collectionGroup": "documentVersions", "fields": [["documentId", "ASCENDING"], ["versionNo", "DESCENDING"]] },
+    { "collectionGroup": "templates", "fields": [["docType", "ASCENDING"], ["status", "ASCENDING"], ["effectiveFrom", "DESCENDING"]] }
+  ]
+}

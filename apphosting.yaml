@@ -7,19 +7,19 @@ runConfig:
   memoryMiB: 1024
 env:
   - variable: NEXT_PUBLIC_FIREBASE_API_KEY
-    value: REPLACE_ME
+    value: AIzaSyC0KAq-lqoB8pTrnurB0jDLQXIwTQXmNGM
     availability: [BUILD, RUNTIME]
   - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
-    value: REPLACE_ME
+    value: fudosan-allinone-2610.firebaseapp.com
     availability: [BUILD, RUNTIME]
   - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
-    value: REPLACE_ME
+    value: fudosan-allinone-2610
     availability: [BUILD, RUNTIME]
   - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-    value: REPLACE_ME
+    value: fudosan-allinone-2610.firebasestorage.app
     availability: [BUILD, RUNTIME]
   - variable: NEXT_PUBLIC_FIREBASE_APP_ID
-    value: REPLACE_ME
+    value: 1:22059983380:web:5d95f6d84cb07fc9bf7d01
     availability: [BUILD, RUNTIME]
   - variable: CRON_SECRET
     secret: cron-secret
