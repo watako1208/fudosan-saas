@@ -121,9 +121,24 @@ export async function listDocs<T extends BaseDoc>(ctx: Ctx, name: string, opts: 
   for (const [f, op, v] of opts.where ?? []) q = q.where(f, op, v);
   if (!opts.includeArchived) q = q.where("archived", "==", false);
   const total = (await q.count().get()).data().count;
-  q = q.orderBy(opts.orderBy ?? "updatedAt", opts.dir ?? "desc");
-  const snap = await q.offset((page - 1) * pageSize).limit(pageSize).get();
-  return { items: snap.docs.map((d) => ({ ...(d.data() as T), id: d.id })), total, page, pageSize };
+  const key = opts.orderBy ?? "updatedAt";
+  try {
+    const snap = await q.orderBy(key, opts.dir ?? "desc").offset((page - 1) * pageSize).limit(pageSize).get();
+    return { items: snap.docs.map((d) => ({ ...(d.data() as T), id: d.id })), total, page, pageSize };
+  } catch (e) {
+    // 複合インデックスが無い組合せ（9 = FAILED_PRECONDITION）は、等価条件のみで取得してサーバー側で並べ替える（最大2000件）
+    if ((e as { code?: number }).code !== 9) throw e;
+    const snap = await q.limit(2000).get();
+    const dir = opts.dir === "asc" ? 1 : -1;
+    const all = snap.docs
+      .map((d) => ({ ...(d.data() as T), id: d.id }))
+      .sort((a, b) => {
+        const x = (a as unknown as Record<string, string | number>)[key] ?? "";
+        const y = (b as unknown as Record<string, string | number>)[key] ?? "";
+        return x < y ? -dir : x > y ? dir : 0;
+      });
+    return { items: all.slice((page - 1) * pageSize, page * pageSize), total, page, pageSize };
+  }
 }
 
 function matchWhere(a: unknown, op: FirebaseFirestore.WhereFilterOp, v: unknown): boolean {

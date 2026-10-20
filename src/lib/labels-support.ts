@@ -5,6 +5,7 @@ import type { Tone } from "@/components/ui";
 import { computeTotals, roundYen, type Rounding, type TaxSetting } from "./domain/money";
 import { addDays } from "./domain/dates";
 import type { Repair, Estimate } from "./types";
+import type { Cap } from "./permissions";
 
 type L = Record<string, { label: string; tone?: Tone }>;
 
@@ -311,3 +312,15 @@ export interface EstimateExt extends Estimate {
   submittedByVendor?: boolean;
   externalApprovalAuthTime?: number | null;
 }
+
+/** 追加付与できる権限の表示名 */
+export const CAP_LABEL: Partial<Record<Cap, string>> = {
+  "billing.confirm": "請求の確定",
+  "payment.confirm": "入金配分の確定",
+  "settlement.confirm": "精算の確定",
+  "contract.approve": "契約の承認",
+  "document.approve": "書類の承認",
+  "repair.approve": "修繕見積の承認",
+  "party.sensitive": "本人確認資料・否決理由の閲覧",
+  "data.export": "データ出力",
+};

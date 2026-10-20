@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { AggregateField, Query } from "firebase-admin/firestore";
 import { requireStaffPage, canAccessStore } from "@/lib/server/session";
 import { col } from "@/lib/server/repo";
@@ -30,13 +31,13 @@ function eq(q: Query, f: F, supports: ("storeId" | "assigneeUid")[]): Query {
 interface Figure {
   key: string;
   label: string;
-  value: React.ReactNode;
+  value: ReactNode;
   basis: string;
   link?: { href: string; cap: Cap };
   error?: boolean;
 }
 
-async function safe(key: string, label: string, basis: string, link: Figure["link"], fn: () => Promise<React.ReactNode>): Promise<Figure> {
+async function safe(key: string, label: string, basis: string, link: Figure["link"], fn: () => Promise<ReactNode>): Promise<Figure> {
   try {
     return { key, label, basis, link, value: await fn() };
   } catch (e) {

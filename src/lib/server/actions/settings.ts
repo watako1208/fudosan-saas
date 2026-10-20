@@ -1,6 +1,7 @@
 "use server";
 import { adminAuth, adminDb } from "../firebase-admin";
 import { requireStaff, requireRecentAuth } from "../session";
+import { revokeInviteCode } from "../onboarding";
 import { run, str, optStr, ActionResult } from "../action";
 import { ValidationError, txGet, txCreate, txUpdate, audit, col, nowIso, BaseDoc } from "../repo";
 import { C, Store, ItemTypeDoc } from "@/lib/types";
@@ -270,4 +271,9 @@ export async function reviseItemType(v: Record<string, unknown>): Promise<Action
     });
     return { redirect: "/settings?tab=items" };
   });
+}
+
+/** 招待コードの無効化（ActionButton 用の引数形式） */
+export async function revokeInvite(input: Record<string, unknown>): Promise<ActionResult<null>> {
+  return revokeInviteCode(str(input.id));
 }

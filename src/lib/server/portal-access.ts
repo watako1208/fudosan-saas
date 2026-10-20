@@ -74,10 +74,11 @@ export const externalScope = cache(async (ctx: Ctx): Promise<ExternalScope | nul
   for (const chunk of chunks([...s.repairIds], 30)) {
     (await ids(ctx, "estimates", "repairId", "in", chunk)).forEach((x) => s.estimateIds.add(x));
   }
-  // 公開書類: 発行済み かつ 本人が公開先 かつ 利用者種別へ公開
-  const docs = await col(ctx.companyId, "documents").where("partyIds", "array-contains", partyId).where("status", "==", "issued").select("publishedTo").limit(500).get();
+  // 公開書類: 発行済みの版がある かつ 本人が公開先（partyIds は公開時に設定） かつ 利用者種別へ公開
+  const docs = await col(ctx.companyId, "documents").where("partyIds", "array-contains", partyId).select("publishedTo", "issuedVersionId", "archived").limit(500).get();
   docs.docs.forEach((d) => {
-    if (((d.data().publishedTo ?? []) as string[]).includes(kind)) s.documentIds.add(d.id);
+    const x = d.data();
+    if (x.issuedVersionId && !x.archived && ((x.publishedTo ?? []) as string[]).includes(kind)) s.documentIds.add(d.id);
   });
   return s;
 });
@@ -99,11 +100,11 @@ export const publishedDocumentImageIds = cache(async (ctx: Ctx): Promise<Set<str
   const out = new Set<string>();
   if (!s || !s.documentIds.size) return out;
   const docs = await Promise.all([...s.documentIds].slice(0, 100).map((id) => col(ctx.companyId, "documents").doc(id).get()));
-  const verIds = docs.map((d) => d.data()?.currentVersionId as string | undefined).filter((x): x is string => !!x);
+  const verIds = docs.map((d) => d.data()?.issuedVersionId as string | undefined).filter((x): x is string => !!x);
   const vers = await Promise.all(verIds.map((id) => col(ctx.companyId, "documentVersions").doc(id).get()));
   for (const v of vers) {
     const data = v.data();
-    if (!data || data.companyId !== ctx.companyId || data.status !== "issued") continue;
+    if (!data || data.companyId !== ctx.companyId) continue;
     for (const b of (data.blocks ?? []) as DocBlock[]) if (b.type === "image") out.add(b.attachmentId);
   }
   return out;
