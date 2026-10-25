@@ -19,7 +19,8 @@ export function clientAuth(): Auth {
     auth = getAuth(app);
     // 認証状態はサーバーのセッションCookieで管理するため、ブラウザには保持しない
     void setPersistence(auth, inMemoryPersistence);
-    if (process.env.NEXT_PUBLIC_USE_EMULATOR === "1") {
+    // 本番ビルドではエミュレータへ接続しない（.env.local が混入しても安全にする）
+    if (process.env.NEXT_PUBLIC_USE_EMULATOR === "1" && process.env.NODE_ENV !== "production") {
       connectAuthEmulator(auth, "http://127.0.0.1:9099", { disableWarnings: true });
     }
   }
